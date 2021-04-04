@@ -11,7 +11,7 @@ return [
     | 'bootstrap' or 'tailwind'
     |
     */
-    'theme' => 'tailwind',
+    'theme' => 'bootstrap',
 
     /*
     |--------------------------------------------------------------------------
@@ -53,15 +53,7 @@ return [
         'flat_piker' => [
             'js' => 'https://cdn.jsdelivr.net/npm/flatpickr',
             'css' => 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
-            'translate' => 'https://npmcdn.com/flatpickr/dist/l10n/pt.js',
-            'config' => [
-                'mode' => 'range',
-                'defaultHour' => 0,
-                'locale' => config('app.locale'),
-                'dateFormat' => 'd/m/Y H:i',
-                'enableTime' => true,
-                'time_24hr' => true
-            ]
+            'translate' => 'https://npmcdn.com/flatpickr/dist/l10n/pt.js'
         ]
     ],
 
