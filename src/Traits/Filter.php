@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 
 trait Filter
 {
-
     /**
      * https://flatpickr.js.org
      */
@@ -24,7 +23,7 @@ trait Filter
 
     public Collection $make_filters;
 
-    public Collection $filters;
+    public array $filters = [];
 
     public bool $filter_action = false;
 
@@ -38,20 +37,21 @@ trait Filter
     public function clearFilter()
     {
         $this->filter_action = false;
-        $this->filters = collect([]);
+        $this->filters = [];
     }
 
     private function renderFilter()
     {
-
-        $this->filters = collect([]);
+        $this->filters = [];
         $make_filters = [];
 
         foreach ($this->columns as $column) {
-            if (isset($column['filter_date_between']['enabled'])) {
-                $make_filters['filter_date_between'][$column['field']]['label'] = $column['title'];
-                $make_filters['filter_date_between'][$column['field']]['config'] = $column['filter_date_between']['config'];
-                $make_filters['filter_date_between'][$column['field']]['class'] = $column['filter_date_between']['class'];
+            if (isset($column['inputs'])) {
+                foreach ($column['inputs'] as $key => $input) {
+                    $input['field'] = $column['field'];
+                    $input['label'] = $column['title'];
+                    $make_filters[$key][] = $input;
+                }
             }
         }
 
@@ -75,19 +75,28 @@ trait Filter
 
     private function prepareFilter($data)
     {
-        if ($this->filter_action) {
-            foreach ($this->filters as $field => $value) {
-                $date = explode('até', $value);
-                if (isset($date[1]) && filled($date[0]) && filled($date[1])) {
+        foreach ($this->filters as $type => $filter) {
+            switch ($type) {
+                case 'date_picker':
+                    $date = explode('até', $filter[key($filter)]);
+                    if (isset($date[1]) && filled($date[0]) && filled($date[1])) {
 
-                    $from = Carbon::createFromFormat('d/m/Y H:i', trim($date[0]))->format($this->formatDate());
-                    $to = Carbon::createFromFormat('d/m/Y H:i', trim($date[1]))->format($this->formatDate());
+                        $from = Carbon::createFromFormat('d/m/Y H:i', trim($date[0]))->format($this->formatDate());
+                        $to = Carbon::createFromFormat('d/m/Y H:i', trim($date[1]))->format($this->formatDate());
 
-                    $data = $data->whereBetween($field, [$from, $to]);
+                        $data->whereBetween(key($filter), [$from, $to]);
 
-                }
+                    }
+                    break;
+                case 'select':
+                    if (filled($filter[key($filter)])) {
+                        $data->where(key($filter), $filter);
+                    }
+                    break;
+                default;
             }
         }
+
         return $data;
     }
 

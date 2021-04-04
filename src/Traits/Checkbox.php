@@ -39,12 +39,9 @@ trait Checkbox
             $this->checkbox_attribute = 'id';
         } else {
             if ($this->dataSource() != null) {
-                if (Str::contains($attribute, Schema::connection(config('database.default'))->getColumnListing($this->dataSource()->getTable()))) {
-                    $this->checkbox = true;
-                    $this->checkbox_attribute = $attribute;
-                }
+                $this->checkbox = true;
+                $this->checkbox_attribute = $attribute;
             }
-
         }
         return $this;
     }

@@ -5,8 +5,6 @@ namespace LuanFreitasDev\LivewireDataTables;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 use LuanFreitasDev\LivewireDataTables\Helpers\CollectionHelper;
@@ -28,10 +26,6 @@ class DataTableComponent extends Component
      */
     public array $headers = [];
     /**
-     * @var array
-     */
-    public array $class = [];
-    /**
      * @var bool
      */
     public bool $search_input = true;
@@ -50,7 +44,7 @@ class DataTableComponent extends Component
     /**
      * @var bool
      */
-    public bool $orderAsc = false;
+    public bool $orderAsc = true;
     /**
      * @var int
      */
@@ -62,20 +56,11 @@ class DataTableComponent extends Component
     /**
      * @var array
      */
-    private array $badge;
-    /**
-     * @var array
-     */
     public array $columns = [];
     /**
      * @var string
      */
-    private string $theme = 'bootstrap';
-    /**
-     * @var string
-     */
     protected string $paginationTheme = 'bootstrap';
-
     /**
      * @var array
      */
@@ -87,22 +72,14 @@ class DataTableComponent extends Component
     public array $perPageValues = [10, 25, 50, 100];
 
     protected $listeners = [
-        'pikerFilter' => 'pikerFilter'
+        'inputDatePiker' => 'inputDatePiker',
     ];
 
-    /**
-     * @return $this
-     */
-    public function tailwind(): DataTableComponent
-    {
-        $this->theme = 'tailwind';
-        return $this;
-    }
-
-    public function pikerFilter($data)
+    public function inputDatePiker($data)
     {
         $input = explode('.', $data[0]['values']);
-        $this->filters->put($input[2], $data[0]['selectedDates']);
+        $this->filters['date_picker'][$input[2]] = $data[0]['selectedDates'];
+        $this->filter_action = true;
     }
 
     /**
@@ -111,9 +88,7 @@ class DataTableComponent extends Component
      */
     public function setUp()
     {
-        $this->showCheckBox()
-            ->showPerPage()
-            ->showSearchInput();
+        $this->showCheckBox()->showPerPage()->showSearchInput();
     }
 
     /**
@@ -154,7 +129,7 @@ class DataTableComponent extends Component
 
         $this->setUp();
 
-        $this->paginationTheme = $this->theme;
+        $this->paginationTheme = config('livewire-datatables.theme');
 
         if (method_exists($this, 'initActions')) {
             $this->initActions();
@@ -208,15 +183,12 @@ class DataTableComponent extends Component
 
                 $data = $this->model->where('id', 'like', '%' . $this->search . '%');
 
-                if (!$this->filter_action) {
+                if (blank($this->filters)) {
 
                     foreach ($this->columns() as $key => $value) {
                         if ($value['searchable'] === true) {
-                            if (Str::contains($value['field'], Schema::connection(config('database.default'))
-                                ->getColumnListing($this->dataSource()->getTable()))) {
-                                $filter = $this->columns[$key]['field'];
-                                $data->orWhere($filter, 'like', '%' . $this->search . '%');
-                            }
+                            $filter = $this->columns[$key]['field'];
+                            $data->orWhere($filter, 'like', '%' . $this->search . '%');
                         }
                     }
 
@@ -233,9 +205,8 @@ class DataTableComponent extends Component
             }
         }
 
-        return view('livewire-datatables::' . $this->theme . '.table', [
-            'data' => $data
-        ]);
+        return $this->renderView($data);
+
     }
 
     /**
@@ -261,6 +232,16 @@ class DataTableComponent extends Component
         foreach ($this->columns as $column) {
             $this->icon_sort[$column['field']] = 'M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 12.293V3.5zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z';
         }
+    }
+
+    private function renderView($data): Factory|View|Application
+    {
+        $theme = config('livewire-datatables.theme');
+        $version = config('livewire-datatables.theme_versions')[$theme];
+
+        return view('livewire-datatables::' . $theme . '.'.$version.'.table', [
+            'data' => $data
+        ]);
     }
 
 }
