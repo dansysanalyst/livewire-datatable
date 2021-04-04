@@ -2,9 +2,6 @@
 
 namespace LuanFreitasDev\LivewireDataTables;
 
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -186,10 +183,7 @@ class DataTableComponent extends Component
         return null;
     }
 
-    /**
-     * @return Application|Factory|View
-     */
-    public function render(): Factory|View|Application
+    public function render()
     {
         $this->model = $this->dataSource();
         $data = [];
