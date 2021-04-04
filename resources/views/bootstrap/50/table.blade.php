@@ -76,23 +76,26 @@
                         @endif
                         @foreach($columns as $column)
                             <td>
-                                @foreach($make_filters['date_picker'] as $field => $date)
-                                    @if($date['field'] === $column['field'])
-                                        @include('livewire-datatables::bootstrap.50.components.date_picker', [
-                                            'date' => $date,
-                                            'inline' => true
-                                        ])
-                                    @endif
-                                @endforeach
-
-                                @foreach($make_filters['select'] as $field => $select)
-                                    @if($select['field'] === $column['field'])
-                                        @include('livewire-datatables::bootstrap.50.components.select', [
-                                            'select' => $select,
-                                            'inline' => true
-                                        ])
-                                    @endif
-                                @endforeach
+                                @if(isset($make_filters['date_picker']))
+                                    @foreach($make_filters['date_picker'] as $field => $date)
+                                        @if($date['field'] === $column['field'])
+                                            @include('livewire-datatables::bootstrap.50.components.date_picker', [
+                                                'date' => $date,
+                                                'inline' => true
+                                            ])
+                                        @endif
+                                    @endforeach
+                                @endif
+                                @if(isset($make_filters['date_picker']))
+                                    @foreach($make_filters['select'] as $field => $select)
+                                        @if($select['field'] === $column['field'])
+                                            @include('livewire-datatables::bootstrap.50.components.select', [
+                                                'select' => $select,
+                                                'inline' => true
+                                            ])
+                                        @endif
+                                    @endforeach
+                                @endif
 
                             </td>
                         @endforeach

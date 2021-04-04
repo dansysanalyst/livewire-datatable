@@ -2,9 +2,6 @@
 
 namespace LuanFreitasDev\LivewireDataTables;
 
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Livewire\Component;
 use Livewire\WithPagination;
 use LuanFreitasDev\LivewireDataTables\Helpers\CollectionHelper;
@@ -161,10 +158,7 @@ class DataTableComponent extends Component
         return null;
     }
 
-    /**
-     * @return Application|Factory|View
-     */
-    public function render(): Factory|View|Application
+    public function render()
     {
         $this->model = $this->dataSource();
         $data = [];
@@ -234,7 +228,7 @@ class DataTableComponent extends Component
         }
     }
 
-    private function renderView($data): Factory|View|Application
+    private function renderView($data)
     {
         $theme = config('livewire-datatables.theme');
         $version = config('livewire-datatables.theme_versions')[$theme];
