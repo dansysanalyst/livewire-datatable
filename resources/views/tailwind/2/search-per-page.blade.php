@@ -1,11 +1,7 @@
-<div class="w-full flex pb-10">
-    @if($search_input)
-        <div class="w-3/6 mx-1">
-            <input wire:model.debounce.300ms="search" type="text" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" placeholder="Buscar...">
-        </div>
-    @endif
+<div class="w-full flex pb-4 pt-2">
+
     @if($perPage_input)
-        <div class="w-1/6 relative mx-1">
+        <div class="w-6/12 sm:w-1/12 md:w-2/12 lg:2/12 relative">
             <select wire:model="perPage" class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state">
                 @foreach($perPageValues as $value)
                     <option>{{ $value }}</option>
@@ -16,4 +12,10 @@
             </div>
         </div>
     @endif
+
+        @if($search_input)
+            <div class="w-full mx-1 float-end float-right">
+                <input wire:model.debounce.300ms="search" type="text" class="appearance-none block w-10/12 sm:w-3/12 md:w-3/12 float-right bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" placeholder="Buscar...">
+            </div>
+        @endif
 </div>
