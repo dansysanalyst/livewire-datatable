@@ -11,7 +11,7 @@ return [
     | 'bootstrap' or 'tailwind'
     |
     */
-    'theme' => 'bootstrap',
+    'theme' => 'tailwind',
 
     /*
     |--------------------------------------------------------------------------
@@ -44,8 +44,8 @@ return [
          * https://github.com/snapappointments/bootstrap-select
          */
         'bootstrap-select' => [
-            'js' => '',
-            'css' => ''
+            'js' => 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js',
+            'css' => 'https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/css/bootstrap-select.min.css'
         ],
         /*
          * https://flatpickr.js.org
@@ -53,7 +53,15 @@ return [
         'flat_piker' => [
             'js' => 'https://cdn.jsdelivr.net/npm/flatpickr',
             'css' => 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
-            'translate' => 'https://npmcdn.com/flatpickr/dist/l10n/pt.js'
+            'translate' => 'https://npmcdn.com/flatpickr/dist/l10n/pt.js',
+            'config' => [
+                'mode' => 'range',
+                'defaultHour' => 0,
+                'locale' => config('app.locale'),
+                'dateFormat' => 'd/m/Y H:i',
+                'enableTime' => true,
+                'time_24hr' => true
+            ]
         ]
     ],
 
@@ -68,5 +76,5 @@ return [
     |
     */
 
-    'filter' => 'outside'
+    'filter' => 'inline'
 ];
