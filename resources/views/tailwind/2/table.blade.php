@@ -24,7 +24,7 @@
                 @endif
             @endif
 
-            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative">
 
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -98,7 +98,7 @@
                     @endif
 
                     @foreach($data as $row)
-                        <tr class="border-b border-gray-200 hover:bg-gray-100">
+                        <tr class="border-b border-gray-200 hover:bg-gray-100" onclick="$('.child_{{$row->id}}').toggle()">
 
                             @include('livewire-datatables::tailwind.2.checkbox-row')
 
@@ -136,6 +136,9 @@
                             @endforeach
 
                             @include('livewire-datatables::tailwind.2.actions')
+
+                        </tr>
+                        <tr class="child_{{ $row->id }} hidden">
 
                         </tr>
                     @endforeach

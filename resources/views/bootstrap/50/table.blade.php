@@ -1,7 +1,7 @@
 <div>
     <div class="">
         <div class="col-md-12" style="margin: 10px 0 10px;">
-            <button class="btn btn-success" wire:click="exportToExcel()">
+            <button class="btn livewire-datatables" wire:click="exportToExcel()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                      class="bi bi-file-earmark-excel" viewBox="0 0 16 16">
                     <path
