@@ -223,62 +223,6 @@ array = route parameters, for example route resource: `Route::resource('products
             'id' => 1
         ]
 
-
-To generate from a collection, update dataSource method to
-
-```php
-    class ProductTable extends DataTableComponent {
-    
-        public function dataSource(): Collection
-        {
-            $products = Products::query()->with('group')->get();
-            $data = DataTable::eloquent($products)
-                ->addColumn('id', function(Products $product) {
-                    return $product->id;
-                })
-                ->addColumn('name', function(Products $product) {
-                    return $product->name;
-                })
-                ->addColumn('featured', function(Products $product) {
-                    return ($product->featured == '') ? 'Não': 'Sim';
-                })
-                ->addColumn('subgroup', function(Products $product) {
-                    return $product->group->name;
-                })
-                ->addColumn('type', function(Products $product) {
-                    return $product->productType();
-                })
-                ->addColumn('active', function(Products $product) {
-                    return $product->hasActive();
-                })
-                ->addColumn('active_export', function(Products $product) {
-                if ($product->active == 1) {
-                    return 'Ativo';
-                }
-                return 'Inativo';
-            })
-            ->make();
-            return new Collection($data);
-           
-        }
-    }
-```
-
-Remember, each element must be an object within the array
-
-To show tailwind version add  method `tailwind()` into setUp method:
-
-```php
-    class ProductTable extends DataTableComponent
-    
-        public function setUp()
-        {
-            $this->tailwind();
-        }
-        
-    }
-```
-
 And then call him:
 
 ```html

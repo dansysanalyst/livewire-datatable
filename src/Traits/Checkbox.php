@@ -34,15 +34,8 @@ trait Checkbox
      */
     public function showCheckBox(string $attribute = 'id'): DataTableComponent
     {
-        if (is_a($this->dataSource(), 'Illuminate\Support\Collection')) {
-            $this->checkbox = true;
-            $this->checkbox_attribute = 'id';
-        } else {
-            if ($this->dataSource() != null) {
-                $this->checkbox = true;
-                $this->checkbox_attribute = $attribute;
-            }
-        }
+        $this->checkbox = true;
+        $this->checkbox_attribute = $attribute;
         return $this;
     }
 
