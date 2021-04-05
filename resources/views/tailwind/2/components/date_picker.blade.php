@@ -15,7 +15,7 @@
             @endif
 
             @if(!$inline)
-                <label for="input_{!! $date['field'] !!}">{!! $date['label'] !!}</label>
+                <label for="input_{!! $date['from_column'] !!}">{!! $date['label'] !!}</label>
             @endif
             <input id="input_{!! $date['from_column'] !!}"
                    data-key="filters.date_picker.{!! $date['from_column'] !!}"

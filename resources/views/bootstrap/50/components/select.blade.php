@@ -3,15 +3,15 @@
         <div wire:ignore class="@if(!$inline) col-md-6 col-lg-3 @endif {!! (isset($select['class'])? $select['class']: '') !!} pt-2">
 
                     @if(!$inline)
-                        <label for="input_{!! $select['field'] !!}">{{$select['label']}}</label>
+                        <label for="input_{!! $select['relation_id'] !!}">{{$select['label']}}</label>
                     @endif
 
-                    <select id="input_{!! $select['field'] !!}"
-                            class="livewire_datatables_select selectpicker_{!! $date['field'] !!}
+                    <select id="input_{!! $select['relation_id'] !!}"
+                            class="livewire_datatables_select selectpicker_{!! $select['relation_id'] !!}
                                 form-control active
 {{ (isset($class_attr)) ? $class_attr: '' }}"
 
-                            wire:model="filters.select.{!! $select['field'] !!}"
+                            wire:model="filters.select.{!! $select['relation_id'] !!}"
                             wire:ignore
                             data-live-search="{{ (isset($select['live-search']))? $select['live-search']: false }}">
 

@@ -10,13 +10,13 @@
         <div class="@if(!$inline) col-md-6 col-lg-3 @endif {!! (isset($date['class'])? $date['class']: '') !!} pt-2">
 
             @if(!$inline)
-                <label for="input_{!! $date['field'] !!}">{!! $date['label'] !!}</label>
+                <label for="input_{!! $date['from_column'] !!}">{!! $date['label'] !!}</label>
             @endif
-            <input id="input_{!! $date['field'] !!}"
-                   data-key="filters.date_picker.{!! $date['field'] !!}"
-                   wire:model="filters.input_date_picker.{!! $date['field'] !!}"
+            <input id="input_{!! $date['from_column'] !!}"
+                   data-key="filters.date_picker.{!! $date['from_column'] !!}"
+                   wire:model="filters.input_date_picker.{!! $date['from_column'] !!}"
                    wire:ignore
-                   class="livewire_datatables_input flatpickr flatpickr-input range_input_{!! $date['field'] !!} form-control active
+                   class="livewire_datatables_input flatpickr flatpickr-input range_input_{!! $date['from_column'] !!} form-control active
                    {{ (isset($class_attr)) ? $class_attr: 'w-full' }}"
                    type="text"
                    placeholder="Selecione o período.."
@@ -24,7 +24,7 @@
         </div>
         @push('datatable_scripts')
             <script type="application/javascript">
-                flatpickr(document.getElementsByClassName('range_input_{!! $date['field'] !!}'), {
+                flatpickr(document.getElementsByClassName('range_input_{!! $date['from_column'] !!}'), {
                         ...@json($defaultDatePikerConfig),
                         @if(isset($customConfig['only_future']))
                         "minDate": "today",
