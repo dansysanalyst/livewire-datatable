@@ -14,20 +14,22 @@
                     @php
                         $customConfig = [];
                     @endphp
-
-                    @foreach($make_filters['date_picker'] as $field => $date)
-                        @include('livewire-datatables::bootstrap.50.components.date_picker', [
-                            'date' => $date,
-                            'inline' => false
-                    ])
-                    @endforeach
-
-                    @foreach($make_filters['select'] as $field => $select)
-                        @include('livewire-datatables::bootstrap.50.components.select', [
-                            'select' => $select,
-                            'inline' => false
+                    @if(isset($make_filters['date_picker']))
+                        @foreach($make_filters['date_picker'] as $field => $date)
+                            @include('livewire-datatables::bootstrap.50.components.date_picker', [
+                                'date' => $date,
+                                'inline' => false
                         ])
-                    @endforeach
+                        @endforeach
+                    @endif
+                    @if(isset($make_filters['select']))
+                        @foreach($make_filters['select'] as $field => $select)
+                            @include('livewire-datatables::bootstrap.50.components.select', [
+                                'select' => $select,
+                                'inline' => false
+                            ])
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>

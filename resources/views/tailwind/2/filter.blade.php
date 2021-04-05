@@ -12,26 +12,30 @@
                     $customConfig = [];
                 @endphp
                 <div class="mb-4 md:flex md:flex-wrap">
-                    <div class="flex flex-col mb-4 md:w-1/4">
-                        @foreach($make_filters['date_picker'] as $field => $date)
+                    @if(isset($make_filters['date_picker']))
+                        <div class="flex flex-col mb-4 md:w-1/4">
+                            @foreach($make_filters['date_picker'] as $field => $date)
 
-                            @include('livewire-datatables::tailwind.2.components.date_picker', [
-                                'date' => $date,
-                                'inline' => false,
-                                'class_attr' => 'w-full'
-                            ])
+                                @include('livewire-datatables::tailwind.2.components.date_picker', [
+                                    'date' => $date,
+                                    'inline' => false,
+                                    'class_attr' => 'w-full'
+                                ])
 
-                        @endforeach
-                    </div>
-                    <div class="flex flex-col mb-4 md:w-1/4">
-                        @foreach($make_filters['select'] as $field => $select)
-                            @include('livewire-datatables::tailwind.2.components.select', [
-                                'select' => $select,
-                                'inline' => false,
-                                'class_attr' => 'w-full'
-                            ])
-                        @endforeach
-                    </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if(isset($make_filters['select']))
+                        <div class="flex flex-col mb-4 md:w-1/4">
+                            @foreach($make_filters['select'] as $field => $select)
+                                @include('livewire-datatables::tailwind.2.components.select', [
+                                    'select' => $select,
+                                    'inline' => false,
+                                    'class_attr' => 'w-full'
+                                ])
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
 
 
