@@ -8,7 +8,7 @@ return [
         'export_selected' => 'Exportar selecionados'
     ],
     'labels' => [
-        'results_per_page' => 'Registro por página',
+        'results_per_page' => 'Registros por página',
         'search_placeholder' => 'Buscar ...'
     ]
 ];
