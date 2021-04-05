@@ -5,12 +5,13 @@ namespace LuanFreitasDev\LivewireDataTables\Helpers;
 use Illuminate\Container\Container;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Str;
 
-class CollectionHelper
+class Collection
 {
-    public static function paginate(Collection $results, $pageSize): LengthAwarePaginator
+
+    public static function paginate(BaseCollection $results, $pageSize): LengthAwarePaginator
     {
         $page = Paginator::resolveCurrentPage('page');
 
@@ -40,16 +41,15 @@ class CollectionHelper
         ));
     }
 
-    public static function prepareFromCollection(\Illuminate\Support\Collection $model, string $search, $columns): Collection
+    public static function search(BaseCollection $model, string $search, $columns): BaseCollection
     {
         $data_map = collect([]);
-        $data_obj = [];
 
         if (!empty($search)) {
-            $model->each(function ($item) use ($columns, $search, $data_map) {
+            foreach ($model as $item) {
                 foreach ($columns as $key => $value) {
                     $field = $value['field'];
-                    if ($value['searchable'] === true) {
+                    if (isset($value['searchable'])) {
                         if (Str::contains(strtolower($item->$field), strtolower($search))) {
                             if (!in_array(strtolower($item->$field), $data_map->toArray())) {
                                 $data_map->push($item);
@@ -57,17 +57,14 @@ class CollectionHelper
                         }
                     }
                 }
-            });
-
-            foreach ($data_map->toArray() as $obj) {
-                $data_obj[] = (object)$obj;
             }
-            $data_map = collect($data_obj);
+            $data_map =  array_unique($data_map->toArray(), SORT_REGULAR);
 
         } else {
             $data_map = $model;
         }
-        return $data_map;
+
+        return collect($data_map);
     }
 
 }

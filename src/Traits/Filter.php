@@ -37,6 +37,7 @@ trait Filter
     public function clearFilter()
     {
         $this->filter_action = false;
+        $this->search = '';
         $this->filters = [];
     }
 
@@ -59,7 +60,7 @@ trait Filter
 
     }
 
-    public function formatDate(string $format = ''): string
+    public function formatDate( string $format = '' ): string
     {
         if ($this->format_date === '') {
             return 'Y-m-d H:i:s';
@@ -73,27 +74,28 @@ trait Filter
         return $format;
     }
 
-    private function prepareFilter($data)
+    private function advancedFilter( $data )
     {
+
         foreach ($this->filters as $type => $filter) {
-            switch ($type) {
-                case 'date_picker':
-                    $date = explode('até', $filter[key($filter)]);
-                    if (isset($date[1]) && filled($date[0]) && filled($date[1])) {
+            if ($type === 'date_picker') {
+                $date = explode('até', $filter[key($filter)]);
+                if (isset($date[1]) && filled($date[0]) && filled($date[1])) {
 
-                        $from = Carbon::createFromFormat('d/m/Y H:i', trim($date[0]))->format($this->formatDate());
-                        $to = Carbon::createFromFormat('d/m/Y H:i', trim($date[1]))->format($this->formatDate());
+                    $from = Carbon::createFromFormat('d/m/Y H:i', trim($date[0]))->format($this->formatDate());
+                    $to = Carbon::createFromFormat('d/m/Y H:i', trim($date[1]))->format($this->formatDate());
 
-                        $data->whereBetween(key($filter), [$from, $to]);
+                    $key = key($filter);
+                    $data = $data->whereBetween($key, [$from, $to]);
 
-                    }
-                    break;
-                case 'select':
-                    if (filled($filter[key($filter)])) {
-                        $data->where(key($filter), $filter);
-                    }
-                    break;
-                default;
+                }
+            }
+            if ($type === 'select') {
+                if (filled($filter[key($filter)])) {
+                    $key = key($filter);
+                    $value = $filter[$key];
+                    $data = $data->where($key, $value);
+                }
             }
         }
 

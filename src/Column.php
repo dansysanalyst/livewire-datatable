@@ -55,17 +55,11 @@ class Column
      * Field name in the database
      *
      * @param string $field
-     * @param string $relation_name
-     * @param string $relation_field
      * @return $this
      */
-    public function field(string $field, string $relation_name='', string $relation_field=''): Column
+    public function field(string $field): Column
     {
         $this->column['field'] = $field;
-        if (filled($relation_name) && filled($relation_field)) {
-            $this->column['relation_name'] = $relation_name;
-            $this->column['relation_field'] = $relation_field;
-        }
         return $this;
     }
 
@@ -106,6 +100,12 @@ class Column
     {
         $this->column['html'] = true;
         $this->column['sortable'] = false;
+        return $this;
+    }
+
+    public function hidden(): Column
+    {
+        $this->column['hidden'] = true;
         return $this;
     }
 
@@ -154,10 +154,11 @@ class Column
      * @param array $settings
      * @return $this
      */
-    public function makeInputSelect($data_source, string $display_field, array $settings=[]): Column
+    public function makeInputSelect($data_source, string $display_field, string $relation_id, array $settings=[]): Column
     {
         $this->column['inputs']['select']['data_source'] = $data_source;
         $this->column['inputs']['select']['display_field'] = $display_field;
+        $this->column['inputs']['select']['relation_id'] = $relation_id;
         $this->column['inputs']['select']['class'] = $settings['class'] ?? '';
         $this->column['inputs']['select']['live-search'] = $settings['live-search'] ?? true;
 
@@ -165,15 +166,17 @@ class Column
     }
 
     /**
-     * @param string $class_attr
+     * @param string $from_column
      * @param array $settings
+     * @param string $class_attr
      * @return Column
      */
-    public function makeInputDatePicker(string $class_attr='', array $settings=[]): Column
+    public function makeInputDatePicker(string $from_column, array $settings=[], string $class_attr=''): Column
     {
         $this->column['inputs']['date_picker']['enabled'] = true;
         $this->column['inputs']['date_picker']['class'] = $class_attr;
         $this->column['inputs']['date_picker']['config'] = $settings;
+        $this->column['inputs']['date_picker']['from_column'] = $from_column;
         return $this;
     }
 

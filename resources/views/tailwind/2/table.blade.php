@@ -37,7 +37,7 @@
                         @include('livewire-datatables::tailwind.2.checkbox-all')
 
                         @foreach($columns as $column)
-                            @if(!isset($column['visible_in_export']) || $column['visible_in_export'] === false)
+                            @if(!isset($column['hidden']))
                                 <th @if(isset($column['sortable']) === true) wire:click="setOrder('{{$column['field']}}')"
                                     @endif
                                     class="@if(isset($column['sortable'])) align-middle cursor-pointer hover:text-black hover:text-current @endif px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -73,28 +73,31 @@
                                 <td></td>
                             @endif
                             @foreach($columns as $column)
-                                <td>
-                                    @if(isset($make_filters['date_picker']))
-                                        @foreach($make_filters['date_picker'] as $field => $date)
-                                            @if($date['field'] === $column['field'])
-                                                @include('livewire-datatables::tailwind.2.components.date_picker', [
-                                                    'date' => $date,
-                                                    'inline' => true
-                                                ])
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                    @if(isset($make_filters['select']))
-                                        @foreach($make_filters['select'] as $field => $select)
-                                            @if($select['field'] === $column['field'])
-                                                @include('livewire-datatables::tailwind.2.components.select', [
-                                                    'select' => $select,
-                                                    'inline' => true
-                                                ])
-                                            @endif
-                                        @endforeach
-                                    @endif
-                                </td>
+                                @if(!isset($column['hidden']))
+                                    <td>
+                                        @if(isset($make_filters['date_picker']))
+                                            @foreach($make_filters['date_picker'] as $field => $date)
+                                                @if($date['field'] === $column['field'])
+                                                    @include('livewire-datatables::tailwind.2.components.date_picker', [
+                                                        'date' => $date,
+                                                        'inline' => true
+                                                    ])
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                        @if(isset($make_filters['select']))
+                                            @foreach($make_filters['select'] as $field => $select)
+                                                @if($select['field'] === $column['field'])
+                                                    @include('livewire-datatables::tailwind.2.components.select', [
+                                                        'select' => $select,
+                                                        'inline' => true
+                                                    ])
+                                                @endif
+                                            @endforeach
+                                        @endif
+
+                                    </td>
+                                @endif
                             @endforeach
                             @if(isset($actionBtns) && count($actionBtns))
                                 <td></td>
@@ -102,6 +105,20 @@
 
                         </tr>
 
+                    @endif
+
+                    @if(count($data) === 0)
+                        <tr class="border-b border-gray-200 hover:bg-gray-100 ">
+                            <td class="text-center p-2" colspan="{{ (($checkbox) ? 1:0)
+                                        + ((isset($actionBtns)) ? 1: 0)
+                                        + (count($columns))
+                                    }}">
+                                <span>Nenhum registro encontrado</span>
+                                <span wire:click.prevent="clearFilter()" style="font-weight: bold; cursor: pointer">
+                                        Limpar filtro
+                                </span>
+                            </td>
+                        </tr>
                     @endif
 
                     @foreach($data as $row)
@@ -114,28 +131,18 @@
 
                                 @php
                                     $field = $column['field'];
-                                    if (isset($column['relation_name']) && isset($column['relation_field'])) {
-                                        $relation_name = $column['relation_name'];
-                                        $relation_field = $column['relation_field'];
-                                    }
                                 @endphp
 
-                                @if(!isset($column['visible_in_export']) || ($column['visible_in_export'] === false))
+                                @if(!isset($column['hidden']))
                                     <td class="{{(isset($column['body_class'])? $column['body_class']: "px-6 py-4 whitespace-nowrap")}}"
                                         style="{{(isset($column['body_style'])? $column['body_style']: "")}}"
                                     >
                                         @if(isset($column['html']))
-                                            @if(isset($column['relation_name']))
-                                                {!! $row->$relation_name->$relation_field !!}
-                                            @else
-                                                {!! $row->$field !!}
-                                            @endif
+                                            {!! $row->$field !!}
+
                                         @elseif(!isset($column['html']))
-                                            @if(isset($column['relation_name']))
-                                                {{ $row->$relation_name->$relation_field }}
-                                            @else
-                                                {!! $row->$field !!}
-                                            @endif
+
+                                            {{ $row->$field }}
                                         @endif
                                     </td>
 

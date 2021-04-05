@@ -4,7 +4,7 @@ namespace LuanFreitasDev\LivewireDataTables;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use LuanFreitasDev\LivewireDataTables\Helpers\CollectionHelper;
+use LuanFreitasDev\LivewireDataTables\Helpers\Collection;
 use LuanFreitasDev\LivewireDataTables\Traits\Checkbox;
 use LuanFreitasDev\LivewireDataTables\Traits\ExportExcel;
 use LuanFreitasDev\LivewireDataTables\Traits\Filter;
@@ -41,7 +41,7 @@ class DataTableComponent extends Component
     /**
      * @var bool
      */
-    public bool $orderAsc = true;
+    public bool $orderAsc = false;
     /**
      * @var int
      */
@@ -160,43 +160,16 @@ class DataTableComponent extends Component
 
     public function render()
     {
-        $this->model = $this->dataSource();
+        $this->model = new \Illuminate\Support\Collection($this->dataSource());
         $data = [];
 
         if (filled($this->model)) {
 
-            if (is_a($this->model, 'Illuminate\Support\Collection')) {
+                $data   = Collection::search($this->model, $this->search, $this->columns());
+                $data   = $this->advancedFilter($data);
+                $data   = $data->sortBy($this->orderBy, SORT_REGULAR, $this->orderAsc);
+                $data   = Collection::paginate($data, $this->perPage);
 
-                $prepare = CollectionHelper::prepareFromCollection($this->model, $this->search, $this->columns());
-                $filtered = $this->prepareFilter($prepare);
-
-                $hydrate_data = $filtered->sortBy($this->orderBy, SORT_REGULAR, $this->orderAsc);
-                $data = CollectionHelper::paginate($hydrate_data, $this->perPage);
-
-            } else {
-
-                $data = $this->model->where('id', 'like', '%' . $this->search . '%');
-
-                if (blank($this->filters)) {
-
-                    foreach ($this->columns() as $key => $value) {
-                        if ($value['searchable'] === true) {
-                            $filter = $this->columns[$key]['field'];
-                            $data->orWhere($filter, 'like', '%' . $this->search . '%');
-                        }
-                    }
-
-                } else {
-
-                    $data = $this->prepareFilter($data);
-
-                }
-
-                $data = $data->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc');
-
-                $data = $data->paginate($this->perPage);
-
-            }
         }
 
         return $this->renderView($data);

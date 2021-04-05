@@ -4,10 +4,10 @@ A [Laravel Livewire](https://laravel-livewire.com) table component with searchin
 
 With the component you can quickly generate a table from an entity or a collection.
 
-Bootstrap version - Product Model
+Bootstrap version
 ![Laravel Livewire Tables](examples/bootstrap.png)
 
-Tailwind version - User Model
+Tailwind version
 ![Laravel Livewire Tables](examples/example.png)
 
 Exported example with selected data
@@ -55,16 +55,8 @@ Component generated for an entity
 
 Using the `make` command:
 
-* To create from a model
-
 ```bash
     php artisan make:table --name=ProductTable --model=App\Models\Product
-```
-
-* To create from a collection (ignore --model)
-
-```bash
-    php artisan make:table --name=ProductTable
 ```
 
 ### Options
@@ -120,66 +112,76 @@ After making a component, you may want to edit the `setUp`, `dataSource`, `colum
 
         public function setUp()
         {
-            $this->showCheckBox()
-                ->showPerPage()
-                ->showSearchInput();
+            $this->showCheckBox()->showPerPage()->showSearchInput();
         }
     
-        public function dataSource(): User
+        public function dataSource(): array
         {
-            return new User();
+            $model = Product::query()->with('group')->get();
+            return DataTable::eloquent($model)
+                ->addColumn('id', function(Product $model) {
+                    return $model->id;
+                })
+                ->addColumn('name', function(Product $model) {
+                    return $model->name;
+                })
+                ->addColumn('group_id', function(Product $model) {
+                    return $model->group_id;
+                })
+                ->addColumn('group_name', function(Product $model) {
+                    return $model->group->name;
+                })
+                ->addColumn('created_at', function(Product $model) {
+                    return $model->created_at;
+                })
+                ->addColumn('created_at_format', function(Product $model) {
+                    return Carbon::parse($model->created_at)->format('d/m/Y H:i:s');
+                })
+                ->make();
         }
     
         public function columns(): array
         {
             return [
                 Column::add()
-                    ->title('Cod')
+                    ->title('ID')
                     ->field('id')
                     ->searchable()
                     ->sortable()
-                    ->html()
                     ->make(),
     
                 Column::add()
-                    ->title('Nome')
+                    ->title('Descrição')
                     ->field('name')
                     ->searchable()
                     ->sortable()
                     ->make(),
     
                 Column::add()
-                    ->title('Em destaque')
-                    ->field('featured')
+                    ->title('GrupoID')
+                    ->field('group_id')
+                    ->hidden()
+                    ->make(),
+    
+                Column::add()
+                    ->title('Grupo')
+                    ->field('group_name')
+                    ->makeInputSelect(Group::all(), 'name', 'group_id', ['live_search' => true ,'class' => ''])
                     ->searchable()
                     ->sortable()
                     ->make(),
     
                 Column::add()
-                    ->title('Sub Grupo')
-                    ->field('subgroup')
-                    ->searchable()
+                    ->title('Criado em')
+                    ->field('created_at')
+                    ->hidden()
                     ->make(),
     
                 Column::add()
-                    ->title('Tipo')
-                    ->field('type')
+                    ->title('Criado em')
+                    ->field('created_at_format')
+                    ->makeInputDatePicker('created_at')
                     ->searchable()
-                    ->make(),
-    
-                Column::add()
-                    ->title('Situação')
-                    ->field('active')
-                    ->html()
-                    ->bodyAttribute('text-center', '')
-                    ->searchable()
-                    ->visibleInExport(false)
-                    ->make(),
-    
-                Column::add()
-                    ->title('Situação')
-                    ->field('active_export')
-                    ->visibleInExport(true)
                     ->make(),
             ];
         }
@@ -188,10 +190,16 @@ After making a component, you may want to edit the `setUp`, `dataSource`, `colum
         {
             return [
                 Button::add('edit')
-                ->i('fa fa-edit', 'Editar')
-                ->class('btn btn-primary')
-                ->route('companies.products.edit', ['product' => 'id'])
-                ->make()
+                    ->caption('Editar')
+                    ->class('btn btn-primary')
+                    ->route('user.edit', ['id' => 'id'])
+                    ->make(),
+    
+                Button::add('delete')
+                    ->caption('Excluir')
+                    ->class('btn btn-danger')
+                    ->route('user.delete', ['id' => 'id'])
+                    ->make(),
             ];
         }
     }
@@ -214,62 +222,6 @@ array = route parameters, for example route resource: `Route::resource('products
         [
             'id' => 1
         ]
-
-
-To generate from a collection, update dataSource method to
-
-```php
-    class ProductTable extends DataTableComponent {
-    
-        public function dataSource(): Collection
-        {
-            $products = Products::query()->with('group')->get();
-            $data = DataTable::eloquent($products)
-                ->addColumn('id', function(Products $product) {
-                    return $product->id;
-                })
-                ->addColumn('name', function(Products $product) {
-                    return $product->name;
-                })
-                ->addColumn('featured', function(Products $product) {
-                    return ($product->featured == '') ? 'Não': 'Sim';
-                })
-                ->addColumn('subgroup', function(Products $product) {
-                    return $product->group->name;
-                })
-                ->addColumn('type', function(Products $product) {
-                    return $product->productType();
-                })
-                ->addColumn('active', function(Products $product) {
-                    return $product->hasActive();
-                })
-                ->addColumn('active_export', function(Products $product) {
-                if ($product->active == 1) {
-                    return 'Ativo';
-                }
-                return 'Inativo';
-            })
-            ->make();
-            return new Collection($data);
-           
-        }
-    }
-```
-
-Remember, each element must be an object within the array
-
-To show tailwind version add  method `tailwind()` into setUp method:
-
-```php
-    class ProductTable extends DataTableComponent
-    
-        public function setUp()
-        {
-            $this->tailwind();
-        }
-        
-    }
-```
 
 And then call him:
 

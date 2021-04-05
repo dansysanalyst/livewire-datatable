@@ -43,7 +43,7 @@
 
                     @foreach($columns as $column)
 
-                        @if(!isset($column['visible_in_export']) || $column['visible_in_export'] === false)
+                        @if(!isset($column['hidden']))
                             <th @if(isset($column['sortable']) === true) wire:click="setOrder('{{$column['field']}}')"
                                 @endif
                                 class="{{(isset($column['header_class'])? $column['header_class']: "")}}"
@@ -75,29 +75,31 @@
                             <td></td>
                         @endif
                         @foreach($columns as $column)
-                            <td>
-                                @if(isset($make_filters['date_picker']))
-                                    @foreach($make_filters['date_picker'] as $field => $date)
-                                        @if($date['field'] === $column['field'])
-                                            @include('livewire-datatables::bootstrap.50.components.date_picker', [
-                                                'date' => $date,
-                                                'inline' => true
-                                            ])
-                                        @endif
-                                    @endforeach
-                                @endif
-                                @if(isset($make_filters['date_picker']))
-                                    @foreach($make_filters['select'] as $field => $select)
-                                        @if($select['field'] === $column['field'])
-                                            @include('livewire-datatables::bootstrap.50.components.select', [
-                                                'select' => $select,
-                                                'inline' => true
-                                            ])
-                                        @endif
-                                    @endforeach
-                                @endif
+                            @if(!isset($column['hidden']))
+                                <td>
+                                    @if(isset($make_filters['date_picker']))
+                                        @foreach($make_filters['date_picker'] as $field => $date)
+                                            @if($date['field'] === $column['field'])
+                                                @include('livewire-datatables::bootstrap.50.components.date_picker', [
+                                                    'date' => $date,
+                                                    'inline' => true
+                                                ])
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    @if(isset($make_filters['date_picker']))
+                                        @foreach($make_filters['select'] as $field => $select)
+                                            @if($select['field'] === $column['field'])
+                                                @include('livewire-datatables::bootstrap.50.components.select', [
+                                                    'select' => $select,
+                                                    'inline' => true
+                                                ])
+                                            @endif
+                                        @endforeach
+                                    @endif
 
-                            </td>
+                                </td>
+                            @endif
                         @endforeach
                         @if(isset($actionBtns) && count($actionBtns))
                             <td></td>
@@ -122,7 +124,7 @@
                                                 d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                                         </svg>
                                         Limpar filtro
-                                    </span>
+                            </span>
                         </td>
                     </tr>
                 @endif
@@ -137,29 +139,17 @@
 
                             @php
                                 $field = $column['field'];
-                                if (isset($column['relation_name']) && isset($column['relation_field'])) {
-                                    $relation_name = $column['relation_name'];
-                                    $relation_field = $column['relation_field'];
-                                }
                             @endphp
 
-                            @if(!isset($column['visible_in_export']) || ($column['visible_in_export'] === false))
+                            @if(!isset($column['hidden']))
                                 <td class="{{(isset($column['body_class'])? $column['body_class']: "")}}"
                                     style="{{(isset($column['body_style'])? $column['body_style']: "")}}"
                                 >
                                     @if(isset($column['html']))
-                                        @if(isset($column['relation_name']))
-                                            {!! $row->$relation_name->$relation_field !!}
-                                        @else
                                             {!! $row->$field !!}
-                                        @endif
 
                                     @elseif(!isset($column['html']))
-                                        @if(isset($column['relation_name']))
-                                            {{ $row->$relation_name->$relation_field }}
-                                        @else
                                             {{ $row->$field }}
-                                        @endif
                                     @endif
                                 </td>
 

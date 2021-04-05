@@ -17,11 +17,11 @@
             @if(!$inline)
                 <label for="input_{!! $date['field'] !!}">{!! $date['label'] !!}</label>
             @endif
-            <input id="input_{!! $date['field'] !!}"
-                   data-key="filters.date_picker.{!! $date['field'] !!}"
-                   wire:model="filters.input_date_picker.{!! $date['field'] !!}"
+            <input id="input_{!! $date['from_column'] !!}"
+                   data-key="filters.date_picker.{!! $date['from_column'] !!}"
+                   wire:model="filters.input_date_picker.{!! $date['from_column'] !!}"
                    wire:ignore
-                   class="livewire_datatables_input flatpickr flatpickr-input range_input_{!! $date['field'] !!}
+                   class="livewire_datatables_input flatpickr flatpickr-input range_input_{!! $date['from_column'] !!}
                        block appearance-no livewire_datatables_input
                        mt-2 mb-2 bg-gray-200 border border-gray-200
                        text-gray-700 py-3 px-4 pr-8 rounded
@@ -34,7 +34,7 @@
         </div>
         @push('datatable_scripts')
             <script type="application/javascript">
-                flatpickr(document.getElementsByClassName('range_input_{!! $date['field'] !!}'), {
+                flatpickr(document.getElementsByClassName('range_input_{!! $date['from_column'] !!}'), {
                         ...@json($defaultDatePikerConfig),
                         @if(isset($customConfig['only_future']))
                         "minDate": "today",
