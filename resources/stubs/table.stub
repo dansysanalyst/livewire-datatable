@@ -3,8 +3,10 @@
 namespace App\Http\Livewire;
 
 use {{ modelName }};
+use Carbon\Carbon;
 use LuanFreitasDev\LivewireDataTables\Button;
 use LuanFreitasDev\LivewireDataTables\Column;
+use LuanFreitasDev\LivewireDataTables\DataTable;
 use LuanFreitasDev\LivewireDataTables\DataTableComponent;
 use LuanFreitasDev\LivewireDataTables\Traits\ActionButton;
 
@@ -14,18 +16,32 @@ class {{ componentName }} extends DataTableComponent
 
     public function setUp()
     {
-        $this->showCheckBox()
-            ->showPerPage()
-            ->showSearchInput();
+        $this->showCheckBox()->showPerPage()->showSearchInput();
     }
 
-    public function dataSource(): {{ modelLastName }}
+    public function dataSource(): array
     {
-        return new {{ modelLastName }}();
+        $model = {{ modelLastName }}::query()->with('group')->get();
+        return DataTable::eloquent($model)
+            ->addColumn('id', function({{ modelLastName }} $model) {
+                return $model->id;
+            })
+            ->addColumn('name', function({{ modelLastName }} $model) {
+                return $model->name;
+            })
+            ->addColumn('created_at', function({{ modelLastName }} $model) {
+                return $model->created_at;
+            })
+            ->addColumn('created_at_format', function({{ modelLastName }} $model) {
+                return Carbon::parse($model->created_at)->format('d/m/Y H:i:s');
+            })
+            ->make();
+
     }
 
     public function columns(): array
     {
+
         return [
             Column::add()
                 ->title('ID')
@@ -35,8 +51,22 @@ class {{ componentName }} extends DataTableComponent
                 ->make(),
 
             Column::add()
+                ->title('Descrição')
+                ->field('name')
+                ->searchable()
+                ->sortable()
+                ->make(),
+
+            Column::add()
                 ->title('Criado em')
                 ->field('created_at')
+                ->hidden()
+                ->make(),
+
+            Column::add()
+                ->title('Criado em')
+                ->field('created_at_format')
+                ->makeInputDatePicker('created_at')
                 ->searchable()
                 ->make(),
         ];
@@ -48,13 +78,13 @@ class {{ componentName }} extends DataTableComponent
             Button::add('edit')
                 ->caption('Editar')
                 ->class('btn btn-primary')
-                ->route('user.edit', ['id'])
+                ->route('user.edit', ['id' => 'id'])
                 ->make(),
 
             Button::add('delete')
                 ->caption('Excluir')
                 ->class('btn btn-danger')
-                ->route('user.delete', ['id'])
+                ->route('user.delete', ['id' => 'id'])
                 ->make(),
         ];
     }

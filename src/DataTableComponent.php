@@ -2,11 +2,9 @@
 
 namespace LuanFreitasDev\LivewireDataTables;
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
-use LuanFreitasDev\LivewireDataTables\Helpers\CollectionHelper;
+use LuanFreitasDev\LivewireDataTables\Helpers\Collection;
 use LuanFreitasDev\LivewireDataTables\Traits\Checkbox;
 use LuanFreitasDev\LivewireDataTables\Traits\ExportExcel;
 use LuanFreitasDev\LivewireDataTables\Traits\Filter;
@@ -24,10 +22,6 @@ class DataTableComponent extends Component
      * @var array
      */
     public array $headers = [];
-    /**
-     * @var array
-     */
-    public array $class = [];
     /**
      * @var bool
      */
@@ -59,20 +53,11 @@ class DataTableComponent extends Component
     /**
      * @var array
      */
-    private array $badge;
-    /**
-     * @var array
-     */
     public array $columns = [];
     /**
      * @var string
      */
-    private string $theme = 'bootstrap';
-    /**
-     * @var string
-     */
     protected string $paginationTheme = 'bootstrap';
-
     /**
      * @var array
      */
@@ -84,22 +69,14 @@ class DataTableComponent extends Component
     public array $perPageValues = [10, 25, 50, 100];
 
     protected $listeners = [
-        'pikerFilter' => 'pikerFilter'
+        'inputDatePiker' => 'inputDatePiker',
     ];
 
-    /**
-     * @return $this
-     */
-    public function tailwind(): DataTableComponent
-    {
-        $this->theme = 'tailwind';
-        return $this;
-    }
-
-    public function pikerFilter($data)
+    public function inputDatePiker($data)
     {
         $input = explode('.', $data[0]['values']);
-        $this->filters->put($input[2], $data[0]['selectedDates']);
+        $this->filters['date_picker'][$input[2]] = $data[0]['selectedDates'];
+        $this->filter_action = true;
     }
 
     /**
@@ -108,9 +85,7 @@ class DataTableComponent extends Component
      */
     public function setUp()
     {
-        $this->showCheckBox()
-            ->showPerPage()
-            ->showSearchInput();
+        $this->showCheckBox()->showPerPage()->showSearchInput();
     }
 
     /**
@@ -151,7 +126,7 @@ class DataTableComponent extends Component
 
         $this->setUp();
 
-        $this->paginationTheme = $this->theme;
+        $this->paginationTheme = config('livewire-datatables.theme');
 
         if (method_exists($this, 'initActions')) {
             $this->initActions();
@@ -185,51 +160,20 @@ class DataTableComponent extends Component
 
     public function render()
     {
-        $this->model = $this->dataSource();
+        $this->model = new \Illuminate\Support\Collection($this->dataSource());
         $data = [];
 
         if (filled($this->model)) {
 
-            if (is_a($this->model, 'Illuminate\Support\Collection')) {
+                $data   = Collection::search($this->model, $this->search, $this->columns());
+                $data   = $this->advancedFilter($data);
+                $data   = $data->sortBy($this->orderBy, SORT_REGULAR, $this->orderAsc);
+                $data   = Collection::paginate($data, $this->perPage);
 
-                $prepare = CollectionHelper::prepareFromCollection($this->model, $this->search, $this->columns());
-                $filtered = $this->prepareFilter($prepare);
-
-                $hydrate_data = $filtered->sortBy($this->orderBy, SORT_REGULAR, $this->orderAsc);
-                $data = CollectionHelper::paginate($hydrate_data, $this->perPage);
-
-            } else {
-
-                $data = $this->model->where('id', 'like', '%' . $this->search . '%');
-
-                if (!$this->filter_action) {
-
-                    foreach ($this->columns() as $key => $value) {
-                        if ($value['searchable'] === true) {
-                            if (Str::contains($value['field'], Schema::connection(config('database.default'))
-                                ->getColumnListing($this->dataSource()->getTable()))) {
-                                $filter = $this->columns[$key]['field'];
-                                $data->orWhere($filter, 'like', '%' . $this->search . '%');
-                            }
-                        }
-                    }
-
-                } else {
-
-                    $data = $this->prepareFilter($data);
-
-                }
-
-                $data = $data->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc');
-
-                $data = $data->paginate($this->perPage);
-
-            }
         }
 
-        return view('livewire-datatables::' . $this->theme . '.table', [
-            'data' => $data
-        ]);
+        return $this->renderView($data);
+
     }
 
     /**
@@ -255,6 +199,16 @@ class DataTableComponent extends Component
         foreach ($this->columns as $column) {
             $this->icon_sort[$column['field']] = 'M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 12.293V3.5zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z';
         }
+    }
+
+    private function renderView($data)
+    {
+        $theme = config('livewire-datatables.theme');
+        $version = config('livewire-datatables.theme_versions')[$theme];
+
+        return view('livewire-datatables::' . $theme . '.'.$version.'.table', [
+            'data' => $data
+        ]);
     }
 
 }
