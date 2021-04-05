@@ -7,17 +7,17 @@
                     @endif
 
                     @if(!$inline)
-                        <label for="input_{!! $select['field'] !!}">{{$select['label']}}</label>
+                        <label for="input_{!! $select['relation_id'] !!}">{{$select['label']}}</label>
                     @endif
 
                     <div class="relative">
-                        <select id="input_{!! $select['field'] !!}"
+                        <select id="input_{!! $select['relation_id'] !!}"
                                 class="livewire_datatables_input
                                     block appearance-none w-full bg-gray-200 border mt-2 mb-2
                                     border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight
                                     focus:outline-none focus:bg-white focus:border-gray-500
 {{ (isset($class_attr)) ? $class_attr: 'w-9/12' }}"
-                                wire:model="filters.select.{!! $select['field'] !!}"
+                                wire:model="filters.select.{!! $select['relation_id'] !!}"
                                 wire:ignore
                                 data-live-search="{{ (isset($select['live-search']))? $select['live-search']: false }}">
 

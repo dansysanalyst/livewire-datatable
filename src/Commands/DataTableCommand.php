@@ -55,13 +55,8 @@ class DataTableCommand extends Command
                 $stub = str_replace('{{ modelLastName }}', Arr::last($modelNameArr), $stub);
             } else {
 
-                if (!empty($this->option('template'))) {
-                    $stub = File::get(base_path($this->option('template')));
-                } else {
-                    $stub = File::get(__DIR__ . '/../../resources/stubs/table.collection.stub');
-                }
+                $this->warn('Could not create, Model path is missing'); exit;
 
-                $stub = str_replace('{{ componentName }}', $this->option('name'), $stub);
             }
 
             $path = app_path('Http/Livewire/' . $this->option('name') . '.php');

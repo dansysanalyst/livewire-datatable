@@ -11,7 +11,7 @@ trait ExportExcel
     public function exportToExcel(): BinaryFileResponse
     {
 
-        $data = $this->dataSource();
+        $data = collect($this->dataSource());
         $except = [];
         $title = [];
         $fields = [];
@@ -23,34 +23,21 @@ trait ExportExcel
         }
 
         foreach ($this->columns as $column) {
-            if (!isset($column['visible_in_export'])) {
+            if (!isset($column['hidden'])) {
                 $title[] = $column['title'];
                 $fields[] = $column['field'];
             } else {
-                if ($column['visible_in_export'] === true) {
-                    $title[] = $column['title'];
-                } else {
-                    $except[] = $column['field'];
-                }
+                $except[] = $column['field'];
             }
         }
 
         $headers[] = $title;
 
-        if (is_a($data, 'Illuminate\Support\Collection')) {
+        $data = $data->map(function ($item) use ($except) {
+            return collect($item)->except($except)->toArray();
+        });
 
-            $data = $data->map(function ($item) use ($except) {
-                return collect($item)->except($except)->toArray();
-            });
-            $build_xlsx = \SimpleXLSXGen::fromArray(array_merge($headers, $data->toArray()), $file_name);
-
-        } else {
-
-            $file_name = strtolower($data->getTable());
-            $data = $data->select($fields);
-            $build_xlsx = \SimpleXLSXGen::fromArray(array_merge($headers, $data->get()->toArray()), $file_name);
-
-        }
+        $build_xlsx = \SimpleXLSXGen::fromArray(array_merge($headers, $data->toArray()), $file_name);
 
         Storage::disk('public')
             ->put($file_name . '_export.xlsx', $build_xlsx);
