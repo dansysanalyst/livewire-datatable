@@ -8,7 +8,7 @@ Bootstrap version
 ![Laravel Livewire Tables](examples/bootstrap.png)
 
 Tailwind version
-![Laravel Livewire Tables](examples/example.png)
+![Laravel Livewire Tables](examples/tailwind.png)
 
 Exported example with selected data
 
