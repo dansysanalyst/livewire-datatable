@@ -43,6 +43,7 @@
                                 selectedDates: dateStr,
                                 values: instance._input.attributes['data-key'].value
                             })
+                            $('.spinner').html('<div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>')
                             window.livewire.emit('inputDatePiker', data);
                         }
                     }

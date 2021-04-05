@@ -25,16 +25,16 @@
 
                 @push('datatable_scripts')
                     <script>
-                        $('.selectpicker_{!! $select['field'] !!}.input_select').selectpicker();
-                        $('select.selectpicker_{!! $select['field'] !!}.input_select').on('change', function () {
+
+                        $('.selectpicker_{!! $select['relation_id'] !!}').selectpicker();
+                        $('select.selectpicker_{!! $select['relation_id'] !!}').on('change', function () {
                             let data = [];
                             data.push({
-                                selected: $('.selectpicker_{!! $select['field'] !!} option:selected').val(),
-                                field: "{!! $select['field'] !!}"
+                                selected: $('.selectpicker_{!! $select['relation_id'] !!} option:selected').val(),
+                                field: "{!! $select['relation_id'] !!}"
                             })
-                            $('.selectpicker_{!! $select['field'] !!}.input_select').selectpicker('refresh');
-
                             $('.spinner').html('<div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>')
+                            $('.selectpicker_{!! $select['field'] !!}').selectpicker('refresh');
 
                         });
                     </script>
