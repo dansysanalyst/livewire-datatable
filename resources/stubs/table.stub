@@ -21,7 +21,7 @@ class {{ componentName }} extends DataTableComponent
 
     public function dataSource(): array
     {
-        $model = {{ modelLastName }}::query()->with('group')->get();
+        $model = {{ modelLastName }}::query()->get();
         return DataTable::eloquent($model)
             ->addColumn('id', function({{ modelLastName }} $model) {
                 return $model->id;

@@ -87,7 +87,7 @@
                                             @endif
                                         @endforeach
                                     @endif
-                                    @if(isset($make_filters['date_picker']))
+                                    @if(isset($make_filters['select']))
                                         @foreach($make_filters['select'] as $field => $select)
                                             @if($select['field'] === $column['field'])
                                                 @include('livewire-datatables::bootstrap.50.components.select', [
