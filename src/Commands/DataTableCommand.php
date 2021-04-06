@@ -26,7 +26,6 @@ class DataTableCommand extends Command
 
             $files = [
                 __DIR__ . '/../../resources/stubs/table.stub' => $stubsPath . '/table.stub',
-                __DIR__ . '/../../resources/stubs/table.collection.stub' => $stubsPath . '/table.collection.stub',
             ];
 
             foreach ($files as $from => $to) {
