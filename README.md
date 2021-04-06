@@ -1,8 +1,20 @@
 # Livewire DataTables
 
-A [Laravel Livewire](https://laravel-livewire.com) table component with searching, sorting, checkboxes, pagination and export data.
+## What is Livewire DataTables?
 
-With the component you can quickly generate a table from an entity or a collection.
+Livewire DataTables is a component for [Laravel Livewire](https://laravel-livewire.com) used to generate dynamic tables for your Laravel Entities or collections.
+
+Out of the box Livewire DataTables component provides many features, such as:
+
+- Searching & Filters
+- Column Sorting
+- Pagination
+- Action checkboxes
+- Action buttons
+- Link on table cell
+- Data Export to CSV/Excel.
+
+The component works with Bootstrap or Tailwind.
 
 Bootstrap version
 ![Laravel Livewire Tables](examples/bootstrap.png)
@@ -14,98 +26,145 @@ Exported example with selected data
 
 ![Laravel Livewire Tables](examples/export.png)
 
-[See these other examples!](examples)
-
-- [Support](https://github.com/luanfreitasdev/livewire-datatable/issues)
-- [Contributions](https://github.com/luanfreitasdev/livewire-datatable/pulls)
+[View more examples!](examples)
 
 ---
-# Installation
+# Requirements
 
-Installing this package via composer:
+- [Laravel 8x](https://laravel.com/docs/8.x/installation)
+- [Livewire 2x](https://laravel-livewire.com)
+- Tailwind or bootstrap:
+  - [Install Tailwindcss](https://tailwindcss.com/docs/guides/laravel)
+  - [Install Bootstrap 5](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
+
+# Get started!
+
+## Installation
+
+For the instalation guide we will create a `ProductTable` to list  products of a `Product` Model.
+
+### 1. Via composer:
+
+To install via composer, run the following command:
 
 ```bash
-    composer require luanfreitasdev/livewire-datatable
+  composer require luanfreitasdev/livewire-datatable
 ```
 
-Add Providers
+### 2. Add DataTableServiceProvider to your Providers list.
+
+Open the file `config/app.php` and add the line bellow after your other providers:
 
 ```php
-    'providers' => [        
-        LuanFreitasDev\LivewireDataTables\Providers\DataTableServiceProvider::class        
+  LuanFreitasDev\LivewireDataTables\Providers\DataTableServiceProvider::class,
+```
+
+Your code should look similar to this:
+
+
+```php
+<?php
+
+ //...
+ 
+    'providers' => [
+        //...
+        LuanFreitasDev\LivewireDataTables\Providers\DataTableServiceProvider::class,       
     ];
 ```
 
-Be sure to enter livewire policies
+### 3. [OPTIONAL] Publish files
+
+This step is option, you may skip it in case you don't need to customize Livewire DataTables.
+
+You may publish the Livewire DataTables configuration, views and language files with the following commands:
+
+Config file:
+
+```bash
+    php artisan vendor:publish --tag=livewire-datatable-config
+```
+
+Views:
+```bash
+    php artisan vendor:publish --tag=datatable-views
+```
+
+Language files:
+```bash
+    php artisan vendor:publish --tag=livewire-datatable-lang
+```
+
+### 4. Be sure to setup the Livewire policies. 
+
+You can read more about this at the official [Livewire documentation](https://laravel-livewire.com/docs/2.x/quickstart)
+.
 
 ```html
     @livewireStyle and @livewireScripts
 ```
 
-You can use either tailwind or bootstrap
-
-[Install Tailwindcss](https://tailwindcss.com/docs/guides/laravel)
-
-[Bootstrap 5](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
-
 ---
-# Making Table Components
+### 5.  Creating a Table Component
 
-Component generated for an entity
+To create a Table Component for an entity use the following Artisan command.
 
-Using the `make` command:
+Make sure to use "" around your `--model` option.
+
 
 ```bash
-    php artisan make:table --name=ProductTable --model=App\Models\Product
+    php artisan make:table --name=ProductTable --model="App\Models\Product"
 ```
 
-### Options
+If everything was succesfull, you will find your new table component inside the `app/Http/Livewire` folder.
+
+
+#### Options
 
 | Option | Description | Example | 
 |----|----|----|
 |**--name**| Model name | ```--name=ProductTable``` |
-|**--model**| Full model path | ```--model=App\Models\Product``` |
+|**--model**| Full model path | ```--model="App\Models\Product"``` |
 |**--publish**| Publish stubs file into the path 'stubs' | ```--publish``` |
 |**--template**| Sometimes you can use ready-made templates for creating different types of tables | ```php artisan make:table --template=stubs/table.sub or php artisan make:table --template=stubs/table_with_buttons.sub``` |
 
-This creates your new table component in the `app/Http/Livewire` folder.
+
+
+### 6.  Using your Table Component.
+
+The `ProductTable` component can be included in any view.
+
+There are two ways to do that. Both work in the same way:
+
+
+```html
+    <livewire:product-table/>
+```
+
+or
+
+```html
+  @livewire('product-table')
+```
+
 
 ---
 
-### Column Methods
 
-| Method | Arguments | Result | Example |
-|----|----|----|----|
-|**add**| |Add new column |```Column::add()```|
-|**title**| *String* $title |Column title representing a field |```add()->title('Name')```|
-|**field**| *String* $field | Field name| ```->field('name')```|
-|**searchable**| |Includes the column in the global search | ```->searchable()``` |
-|**sortable**| |Includes column in the sortable list | ```->sortable()``` |
-|**headerAttribute**|[*String* $class default: ''], [*String* $style default: '']|Add the class and style elements to the column header|```->headerAttribute('text-center', 'color:red')```|
-|**bodyAttribute**|[*String* $class default: ''], [*String* $style default: '']|Add the column lines the class and style elements|```->bodyAttribute('text-center', 'color:red')```|
-|**html**| |When the field has any changes within the scope using Collection|```->html()```|
-|**visibleInExport**| |When true it will be invisible in the table and will show the column in the exported file|```->visibleInExport(true)```|
-|**hidden**| |hides the column in the table|```->hidden()```|
-|**filterDateBetween**| [*String* $class default: 'col-3'] |Include a specific field on the page to filter between the specific date in the column|```Column::add()->filterDateBetween()```|
-|**makeInputSelect**| [*Array* $data_source, *String* $display_field, *String* $relation_id, *Array* $settings] |Include a specific field on the page to filter a hasOne relation in the column|```Column::add()->makeInputSelect(Group::all(), 'name', 'group_id', ['live_search' => true ,'class' => ''])```|
----
+# Configuring & Customizing your Table Component
 
+_::: wip :::_
 
-### Action Methods
+You can configure and customize your table component to adjust it to your needs.
 
-Coming soon
+Verify the following methodos:
 
----
+- `setUp`, 
+- `dataSource`, 
+- `columns` 
+- `actions`
 
-### Filters
-
-To use a filter, you must declare the ```@datatableFilter``` directive before </body>
-
----
-
-# Using Table Components
-
-After making a component, you may want to edit the `setUp`, `dataSource`, `columns` and `actions` methods:
+Example:
 
 ```php
     class ProductTable extends DataTableComponent
@@ -207,7 +266,34 @@ After making a component, you may want to edit the `setUp`, `dataSource`, `colum
     }
 ```
 
-### `->route(string, array)`
+## Column Methods
+
+_::: wip :::_
+
+| Method | Arguments | Result | Example |
+|----|----|----|----|
+|**add**| |Add new column |```Column::add()```|
+|**title**| *String* $title |Column title representing a field |```add()->title('Name')```|
+|**field**| *String* $field | Field name| ```->field('name')```|
+|**searchable**| |Includes the column in the global search | ```->searchable()``` |
+|**sortable**| |Includes column in the sortable list | ```->sortable()``` |
+|**headerAttribute**|[*String* $class default: ''], [*String* $style default: '']|Add the class and style elements to the column header|```->headerAttribute('text-center', 'color:red')```|
+|**bodyAttribute**|[*String* $class default: ''], [*String* $style default: '']|Add the column lines the class and style elements|```->bodyAttribute('text-center', 'color:red')```|
+|**html**| |When the field has any changes within the scope using Collection|```->html()```|
+|**visibleInExport**| |When true it will be invisible in the table and will show the column in the exported file|```->visibleInExport(true)```|
+|**hidden**| |hides the column in the table|```->hidden()```|
+|**filterDateBetween**| [*String* $class default: 'col-3'] |Include a specific field on the page to filter between the specific date in the column|```Column::add()->filterDateBetween()```|
+|**makeInputSelect**| [*Array* $data_source, *String* $display_field, *String* $relation_id, *Array* $settings] |Include a specific field on the page to filter a hasOne relation in the column|```Column::add()->makeInputSelect(Group::all(), 'name', 'group_id', ['live_search' => true ,'class' => ''])```|
+---
+
+
+## Action Methods
+
+_::: wip :::_
+
+
+### Route
+ `->route(string, array)`
 
 string = route name
 array = route parameters, for example route resource: `Route::resource('products', 'ProductController');`
@@ -225,17 +311,19 @@ array = route parameters, for example route resource: `Route::resource('products
             'id' => 1
         ]
 
-And then call him:
 
-```html
-    <livewire:product-table/> or @livewire('product-table')
-```
-# Publishing Files
+---
 
-Publishing files is optional.
+### Filters
 
-Publishing the table view files:
+To use a filter, you must declare the ```@datatableFilter``` directive before </body>
 
-```bash
-    php artisan vendor:publish --tag=datatable-views
-```
+---
+## Support
+
+If you need any support, please check our [Issues](https://github.com/luanfreitasdev/livewire-datatable/issues). You can ask questions or report problems there.
+
+
+## Credits
+
+- [Contributions](https://github.com/luanfreitasdev/livewire-datatable/pulls)
