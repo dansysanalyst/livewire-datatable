@@ -20,29 +20,52 @@ class DataTableCommand extends Command
     public function handle()
     {
         if ($this->option('publish')) {
-            if (! is_dir($stubsPath = $this->laravel->basePath('stubs'))) {
+            if (!is_dir($stubsPath = $this->laravel->basePath('stubs'))) {
                 (new Filesystem)->makeDirectory($stubsPath);
             }
 
             $files = [
-                __DIR__.'/../../resources/stubs/table.stub' => $stubsPath.'/table.stub',
-                __DIR__.'/../../resources/stubs/table.collection.stub' => $stubsPath.'/table.collection.stub',
+                __DIR__ . '/../../resources/stubs/table.stub' => $stubsPath . '/table.stub',
+                __DIR__ . '/../../resources/stubs/table.collection.stub' => $stubsPath . '/table.collection.stub',
             ];
 
             foreach ($files as $from => $to) {
-                if (! file_exists($to) || $this->option('force')) {
+                if (!file_exists($to) || $this->option('force')) {
                     file_put_contents($to, file_get_contents($from));
                 }
             }
 
             $this->info('Stubs published successfully.');
-
         } else {
+            $tableName = $this->option('name');
+
+            if (empty($tableName)) {
+                $this->error('Error: Table name is required.<info> E.g. --name="ResourceTable"</info>');
+                exit;
+            }
 
             $modelName = $this->option('model');
+
+            if (empty($modelName)) {
+                $this->error('Error: Model name is required.<info> E.g. --model="\App\Models\ResourceModel"</info>');
+                exit;
+            }
+
             $modelNameArr = explode('\\', $modelName);
 
-            if (!empty($this->option('model'))) {
+            if (count($modelNameArr) == 1) {
+
+                if (strlen(preg_replace('![^A-Z]+!', '', $modelName))) {
+                    $this->warn('Error: Could not process the informed Model name. Did you use quotes?<info> E.g. --model="\App\Models\ResourceModel"</info>');
+                    exit;
+                }
+
+                $this->error('Error: Model name is required.<info> E.g. --model="\App\Models\ResourceModel"</info>');
+                exit;
+            }
+
+
+            if (!empty($modelName)) {
 
                 if (!empty($this->option('template'))) {
                     $stub = File::get(base_path($this->option('template')));
@@ -55,19 +78,18 @@ class DataTableCommand extends Command
                 $stub = str_replace('{{ modelLastName }}', Arr::last($modelNameArr), $stub);
             } else {
 
-                $this->warn('Could not create, Model path is missing'); exit;
-
+                $this->error('Could not create, Model path is missing');
+                exit;
             }
 
-            $path = app_path('Http/Livewire/' . $this->option('name') . '.php');
+            $path = app_path('Http/Livewire/' . $tableName . '.php');
 
             File::ensureDirectoryExists(app_path('Http/Livewire'));
 
-            if (!File::exists($path) || $this->confirm($this->option('name') . ' already exists. Overwrite it?')) {
+            if (!File::exists($path) || $this->confirm('It seems <comment>' . $tableName . '</comment> already exists. Overwrite it?')) {
                 File::put($path, $stub);
-                $this->info($this->option('name') . ' was made!');
+                $this->info('<comment>' . $tableName . '</comment> was successfully created at [<comment>' . $path . '</comment>]');
             }
         }
-
     }
 }
