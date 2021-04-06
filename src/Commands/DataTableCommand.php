@@ -82,13 +82,15 @@ class DataTableCommand extends Command
                 exit;
             }
 
-            $path = app_path('Http/Livewire/' . $tableName . '.php');
+            $create_at = 'Http/Livewire/' . $tableName . '.php';
+
+            $path = app_path($create_at);
 
             File::ensureDirectoryExists(app_path('Http/Livewire'));
 
             if (!File::exists($path) || $this->confirm('It seems <comment>' . $tableName . '</comment> already exists. Overwrite it?')) {
                 File::put($path, $stub);
-                $this->info('<comment>' . $tableName . '</comment> was successfully created at [<comment>' . $path . '</comment>]');
+                $this->info('<comment>' . $tableName . '</comment> was successfully created at [<comment>App/' . $create_at . '</comment>]');
             }
         }
     }
